@@ -1,0 +1,2 @@
+-keep class com.pustovit.sbp_app_detector.** { *; }
+-keep interface com.pustovit.sbp_app_detector.** { *; }
