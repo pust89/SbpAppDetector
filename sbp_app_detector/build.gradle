@@ -5,22 +5,40 @@ plugins {
 
 android {
     namespace 'com.pustovit.sbp_app_detector'
-    compileSdk 33
+    compileSdk rootProject.compileSdk
 
     defaultConfig {
-        minSdk 24
-        targetSdk 33
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdk rootProject.minSdk
+        targetSdk rootProject.targetSdk
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+        setProperty("archivesBaseName", "sbp_app_detector_"+rootProject.versionName)
         consumerProguardFiles "consumer-rules.pro"
+    }
+
+    signingConfigs {
+        release {
+            def keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
+            Properties keystoreProperties = new Properties()
+
+            if (keystorePropertiesFile.exists()) {
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+            }
+            storeFile = file(keystoreProperties['RELEASE_KEYSTORE_PATH'])
+            storePassword = keystoreProperties['RELEASE_KEYSTORE_PASSWORD']
+            keyAlias = keystoreProperties['RELEASE_KEY_ALIAS']
+            keyPassword = keystoreProperties['RELEASE_KEY_ALIAS_PASSWORD']
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

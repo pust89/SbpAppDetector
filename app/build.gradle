@@ -5,17 +5,16 @@ plugins {
 
 android {
     namespace 'com.pustovit.sbp_app_detector_sample_app'
-    compileSdk 33
+    compileSdk rootProject.compileSdk
 
     defaultConfig {
         applicationId "com.pustovit.sbp_app_detector_sample_app"
-        minSdk 24
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdk rootProject.minSdk
+        targetSdk rootProject.targetSdk
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
     }
+
     signingConfigs {
         release {
             def keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
