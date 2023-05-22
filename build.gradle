@@ -8,7 +8,7 @@ buildscript {
 
         versionMajor = 1
         versionMinor = 1
-        versionPatch = 0
+        versionPatch = 1
 
         versionCode = versionMajor*10000 + versionMinor*100 + versionPatch
         versionName = "$versionMajor.$versionMinor.$versionPatch"
@@ -20,7 +20,8 @@ buildscript {
     }
 }
 plugins {
-    id 'com.android.application' version '8.0.0' apply false
-    id 'com.android.library' version '8.0.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.8.0' apply false
+//    id 'com.android.application' version '8.0.0' apply true
+//    id 'com.android.library' version '8.0.0' apply true
+//    id 'org.jetbrains.kotlin.android' version '1.8.0' apply true
+    id 'maven-publish' apply true
 }
