@@ -8,8 +8,13 @@ android {
     namespace 'com.pustovit.sbp_app_detector'
     compileSdk rootProject.compileSdk
 
-    group = "com.github.SbpAppDetector"
-    version = rootProject.versionName
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+
     defaultConfig {
         minSdk rootProject.minSdk
         targetSdk rootProject.targetSdk
@@ -37,49 +42,15 @@ android {
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     }
 }
-afterEvaluate {
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                from components.release
-                groupId = 'com.github.SbpAppDetector'
-                artifactId = 'library'
-                version = rootProject.versionName
-            }
-        }
-    }
-}
-
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            pom {
-                name = 'My Library'
-                description = 'A concise description of my library'
-                url = 'http://www.example.com/library'
-                properties = [
-                        myProp: "value",
-                        "prop.with.dots": "anotherValue"
-                ]
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'johnd'
-                        name = 'John Doe'
-                        email = 'john.doe@example.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://example.com/my-library.git'
-                    developerConnection = 'scm:git:ssh://example.com/my-library.git'
-                    url = 'http://example.com/my-library/'
-                }
+        maven(MavenPublication) {
+            groupId = 'com.github.pust89'
+            artifactId = 'com.github.SbpAppDetector'
+            version = rootProject.versionName
+            afterEvaluate {
+                from components.release
             }
         }
     }
