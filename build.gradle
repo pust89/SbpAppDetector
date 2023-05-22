@@ -8,10 +8,14 @@ buildscript {
 
         versionMajor = 1
         versionMinor = 0
-        versionPatch = 6
+        versionPatch = 7
 
         versionCode = versionMajor*10000 + versionMinor*100 + versionPatch
         versionName = "$versionMajor.$versionMinor.$versionPatch"
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.4.2"
     }
 }
 plugins {
