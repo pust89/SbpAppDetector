@@ -8,14 +8,15 @@ buildscript {
 
         versionMajor = 1
         versionMinor = 0
-        versionPatch = 7
+        versionPatch = 8
 
         versionCode = versionMajor*10000 + versionMinor*100 + versionPatch
         versionName = "$versionMajor.$versionMinor.$versionPatch"
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:7.4.2"
+        classpath 'com.android.tools.build:gradle:8.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
     }
 }
 plugins {

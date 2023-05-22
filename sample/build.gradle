@@ -15,6 +15,13 @@ android {
         versionName rootProject.versionName
     }
 
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+
     signingConfigs {
         release {
             def keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
