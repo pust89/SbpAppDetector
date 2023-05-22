@@ -8,47 +8,79 @@ android {
     namespace 'com.pustovit.sbp_app_detector'
     compileSdk rootProject.compileSdk
 
+    group = "com.github.SbpAppDetector"
+    version = rootProject.versionName
     defaultConfig {
         minSdk rootProject.minSdk
         targetSdk rootProject.targetSdk
         versionCode rootProject.versionCode
         versionName rootProject.versionName
-        setProperty("archivesBaseName", "sbp_app_detector_"+rootProject.versionName)
+        setProperty("archivesBaseName", "sbp_app_detector_" + rootProject.versionName)
         consumerProguardFiles "consumer-rules.pro"
     }
-
-    signingConfigs {
-        release {
-            def keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
-            Properties keystoreProperties = new Properties()
-
-            if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-            }
-            storeFile = file(keystoreProperties['RELEASE_KEYSTORE_PATH'])
-            storePassword = keystoreProperties['RELEASE_KEYSTORE_PASSWORD']
-            keyAlias = keystoreProperties['RELEASE_KEY_ALIAS']
-            keyPassword = keystoreProperties['RELEASE_KEY_ALIAS_PASSWORD']
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    dependencies{
+    dependencies {
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    }
+}
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.release
+                groupId = 'com.github.SbpAppDetector'
+                artifactId = 'library'
+                version = rootProject.versionName
+            }
+        }
+    }
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'My Library'
+                description = 'A concise description of my library'
+                url = 'http://www.example.com/library'
+                properties = [
+                        myProp: "value",
+                        "prop.with.dots": "anotherValue"
+                ]
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'johnd'
+                        name = 'John Doe'
+                        email = 'john.doe@example.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://example.com/my-library.git'
+                    developerConnection = 'scm:git:ssh://example.com/my-library.git'
+                    url = 'http://example.com/my-library/'
+                }
+            }
+        }
     }
 }

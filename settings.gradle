@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "SbpAppDetectorSampleApp"
-include ':app'
+rootProject.name = "SbpAppDetector"
+include ':sample'
 include ':sbp_app_detector'
