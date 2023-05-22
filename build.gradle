@@ -7,8 +7,8 @@ buildscript {
         compileSdk = 33
 
         versionMajor = 1
-        versionMinor = 0
-        versionPatch = 9
+        versionMinor = 1
+        versionPatch = 0
 
         versionCode = versionMajor*10000 + versionMinor*100 + versionPatch
         versionName = "$versionMajor.$versionMinor.$versionPatch"

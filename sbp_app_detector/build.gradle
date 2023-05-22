@@ -42,7 +42,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'com.github.pust89'
             artifactId = 'SbpAppDetector'
-            version = '1.0.9'
+            version = rootProject.versionName
             afterEvaluate {
                 from components.release
             }
