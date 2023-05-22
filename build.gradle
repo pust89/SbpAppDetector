@@ -8,7 +8,7 @@ buildscript {
 
         versionMajor = 1
         versionMinor = 0
-        versionPatch = 8
+        versionPatch = 9
 
         versionCode = versionMajor*10000 + versionMinor*100 + versionPatch
         versionName = "$versionMajor.$versionMinor.$versionPatch"
