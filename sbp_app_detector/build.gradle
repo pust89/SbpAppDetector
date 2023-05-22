@@ -23,12 +23,6 @@ android {
         setProperty("archivesBaseName", "sbp_app_detector_" + rootProject.versionName)
         consumerProguardFiles "consumer-rules.pro"
     }
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
