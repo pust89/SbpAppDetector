@@ -22,6 +22,8 @@ android {
         versionName rootProject.versionName
         setProperty("archivesBaseName", "sbp_app_detector_" + rootProject.versionName)
         consumerProguardFiles "consumer-rules.pro"
+
+        manifestPlaceholders = [versionCodePlaceholder:rootProject.versionCode, versionNamePlaceholder:rootProject.versionName]
     }
 
     compileOptions {

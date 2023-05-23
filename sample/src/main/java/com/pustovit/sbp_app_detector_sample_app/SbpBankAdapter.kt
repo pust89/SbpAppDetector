@@ -6,13 +6,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.pustovit.sbp_app_detector.model.SbpBank
-import com.pustovit.sbp_app_detector_sample_app.databinding.LayoutItemSbpBankAnswerBinding
+import com.pustovit.sbp_app_detector_sample_app.databinding.LayoutItemSbpBankBinding
 
 class SbpBankAdapter(private val onClick: (SbpBank) -> Unit) :
     ListAdapter<SbpBank, SbpBankAnswerViewHolder>(itemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SbpBankAnswerViewHolder {
-        val binding = LayoutItemSbpBankAnswerBinding.inflate(LayoutInflater.from(parent.context))
+        val binding = LayoutItemSbpBankBinding.inflate(LayoutInflater.from(parent.context))
         return SbpBankAnswerViewHolder(binding)
     }
 
@@ -23,7 +23,7 @@ class SbpBankAdapter(private val onClick: (SbpBank) -> Unit) :
     }
 }
 
-class SbpBankAnswerViewHolder(private val binding: LayoutItemSbpBankAnswerBinding) :
+class SbpBankAnswerViewHolder(private val binding: LayoutItemSbpBankBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(sbpBank: SbpBank, onClick: (SbpBank) -> Unit) {
