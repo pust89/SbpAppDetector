@@ -24,8 +24,8 @@ class SbpBank(
     val activityResolveInfo: ResolveInfo
 ) {
     /**
-     * Start this bank's SbpActivity.
-     * Throw IllegalArgumentException if param uri schema is not
+     * Starts this bank's SbpActivity.
+     * Throws IllegalArgumentException if param uri schema is not
      * [requiredSchema] from [SbpBank]
      * @throws IllegalArgumentException
      * @param uri uri
@@ -40,8 +40,8 @@ class SbpBank(
     }
 
     /**
-     * Start this bank's SbpActivity.
-     * Throw IllegalArgumentException if param uri schema is not
+     * Starts this bank's SbpActivity.
+     * Throws IllegalArgumentException if param uri schema is not
      * [requiredSchema] from [SbpBank]
      * @throws IllegalArgumentException
      * @param uri uri
