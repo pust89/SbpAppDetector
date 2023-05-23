@@ -35,7 +35,7 @@ dependencyResolutionManagement {
 Add dependency to your `build.gradle` file of the module where you want to use SbpAppDetector.
 ```groovy
 dependencies {
-    implementation 'com.github.pust89:SbpAppDetector:1.1.7'
+    implementation 'com.github.pust89:SbpAppDetector:1.1.8'
 }
 ```
 
