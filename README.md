@@ -35,33 +35,66 @@ dependencyResolutionManagement {
 Add dependency to your `build.gradle` file of the module where you want to use SbpAppDetector.
 ```groovy
 dependencies {
-    implementation 'com.github.pust89:SbpAppDetector:2.0.2'
+    implementation 'com.github.pust89:SbpAppDetector:2.0.3'
 }
 ```
 
 ### Basic usage
+Create an SbpAppDetector using the create method
+``` 
+    private val sbpAppDetector by lazy {
+        SbpAppDetector.create(
+            contextProvider = {
+                requireContext()
+            },
+            listener = object : SbpAppDetector.Listener {
 
-```
-     fun findSbpBanks() {
+                override fun onSuccess(installedSbpBanks: List<SbpBank>) {
+                    sbpBankAdapter.submitList(installedSbpBanks)
+                }
 
-        val sbpAppDetector = SbpAppDetector.create(object : SbpAppDetector.Listener {
-            override fun onSuccess(installedSbpBanks: List<SbpBank>) {
-                Toast.makeText(requireContext(), "found ${installedSbpBanks.size} banks", Toast.LENGTH_SHORT).show()
-            }
+                override fun onLoading(isLoading: Boolean) {
+                    binding?.progressBar?.isVisible = isLoading
+                }
 
-            override fun onLoading(isLoading: Boolean) {
-                Toast.makeText(requireContext(), "isLoading $isLoading", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onFailure(throwable: Throwable) {
-                Toast.makeText(requireContext(), throwable.message, Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        lifecycleScope.launch {
-            sbpAppDetector.execute(context)
-        }
+                override fun onFailure(throwable: Throwable) {
+                    Toast.makeText(requireContext(), throwable.message, Toast.LENGTH_SHORT).show()
+                }
+            })
     }
+```
+ You can call the **execute** method that makes a request to https://qr.nspk.ru/proxyapp/c2bmembers.json  and finds all installed banks on this device.
+ ```
+        lifecycleScope.launch {
+            sbpAppDetector.execute()
+        }
+```
+Or you can call the **execute** method with your own implementation of RemoteDataSource.
+
+ ```
+        lifecycleScope.launch {
+            sbpAppDetector.execute(
+                remoteDataSource = object : SbpAppDetector.RemoteDataSource {
+                    override suspend fun getSbpBanks(): List<SbpBankDto> {
+                        val requestedBanks = listOf<SbpBankDto>(
+                            SbpBankDto(
+                                bankName = "Сбербанк",
+                                logoURL = "https://qr.nspk.ru/proxyapp/logo/bank100000000111.png",
+                                schema =  "bank100000000111",
+                                package_name = "ru.sberbankmobile"
+                            ),
+                            SbpBankDto(
+                                bankName = "Тинькофф Банк",
+                                logoURL = "https://qr.nspk.ru/proxyapp/logo/bank100000000004.png",
+                                schema =  "bank100000000004",
+                                package_name = "com.idamob.tinkoff.android"
+                            )
+                        )
+                        return requestedBanks
+                    }
+                }
+            )
+        }
 ```
 
 The **SbpBank** entity has methods to open bank Activity
@@ -104,4 +137,5 @@ SbpAppDetector comes with a **sample app**. You can find it inside the [/sample 
 vovapust1989@gmail.com
 
 https://www.linkedin.com/in/vladimir-pustovit-b8b8a9204/
+
 

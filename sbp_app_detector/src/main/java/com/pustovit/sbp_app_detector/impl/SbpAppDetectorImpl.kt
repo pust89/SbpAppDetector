@@ -7,53 +7,72 @@ import android.content.pm.ResolveInfo
 import android.os.Build
 import com.pustovit.sbp_app_detector.SbpAppDetector
 import com.pustovit.sbp_app_detector.model.SbpBank
-import com.pustovit.sbp_app_detector.network.SbpBankDto
+import com.pustovit.sbp_app_detector.model.InternalSbpBankDto
 import com.pustovit.sbp_app_detector.network.SbpConnection
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.lang.Exception
 import java.text.Collator
 import java.util.*
 import kotlin.Comparator
 
-internal class SbpAppDetectorImpl(private val listener: SbpAppDetector.Listener) : SbpAppDetector {
-
-
-    private val sbpConnection = SbpConnection()
-
-    private val onSuccessLoading: ((Context, List<SbpBankDto>) -> Unit) =
-        { context, sbpBanksDto ->
-            sbpBanksDto.filter { it.schema.isNotEmpty() }.let {
-                val installedBanks = getInstalledBanks(context, it)
-                listener.onLoading(false)
-                listener.onSuccess(installedBanks)
-            }
-        }
-
-    private val onFailureLoading: ((Throwable) -> Unit) = {
-        listener.onFailure(it)
-    }
-
-    private val onLoading: ((Boolean) -> Unit) = {
-        listener.onLoading(it)
-    }
+internal class SbpAppDetectorImpl(
+    private val contextProvider: () -> Context?,
+    private val listener: SbpAppDetector.Listener
+) : SbpAppDetector {
 
     override suspend fun execute(
-        context: Context,
-        connectTimeout: Int,
-        readTimeout: Int
+        remoteDataSource: SbpAppDetector.RemoteDataSource
     ) {
-        sbpConnection.getSbpBanks(
-            context = context,
-            onSuccessLoading = onSuccessLoading,
-            onLoading = onLoading,
-            onFailureLoading = onFailureLoading,
+        try {
+            listener.onLoading(true)
+
+            withContext(Dispatchers.IO) {
+                remoteDataSource.getSbpBanks().map {
+                    InternalSbpBankDto(
+                        bankName = it.bankName ?: "",
+                        logoURL = it.logoURL ?: "",
+                        schema = it.schema ?: "",
+                        package_name = it.package_name ?: ""
+                    )
+                }.filter { it.schema.isNotEmpty() }
+            }.let { list ->
+                contextProvider()?.let { context ->
+                    val installedBanks =
+                        withContext(Dispatchers.IO) {
+                            getInstalledBanks(context, list)
+                        }
+                    withContext(Dispatchers.Main) {
+                        listener.onLoading(false)
+                        listener.onSuccess(installedBanks)
+                    }
+                } ?: run {
+                    withContext(Dispatchers.Main) {
+                        listener.onLoading(false)
+                        listener.onFailure(RuntimeException("Context is null!"))
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                listener.onLoading(false)
+                listener.onFailure(e)
+            }
+        }
+    }
+
+    override suspend fun execute(connectTimeout: Int, readTimeout: Int) {
+        val sbpConnection = SbpConnection(
             connectTimeout = connectTimeout,
             readTimeout = readTimeout,
         )
+        execute(RemoteDataSourceImpl(sbpConnection))
     }
-
 
     private fun getInstalledBanks(
         context: Context,
-        sbpBanksDto: List<SbpBankDto>
+        internalSbpBanksDto: List<InternalSbpBankDto>
     ): List<SbpBank> {
 
         val packageManager = context.packageManager
@@ -62,7 +81,7 @@ internal class SbpAppDetectorImpl(private val listener: SbpAppDetector.Listener)
                 Collator.getInstance(Locale("ru", "RU")).compare(o1.appName, o2.appName)
             }
 
-        return sbpBanksDto.mapNotNull { sbpBank ->
+        return internalSbpBanksDto.mapNotNull { sbpBank ->
             getActivityResolveInfoCompat(sbpBank.intentForCheck, packageManager).firstOrNull()
                 ?.let { resolveInfo ->
                     val appName =
@@ -72,6 +91,7 @@ internal class SbpAppDetectorImpl(private val listener: SbpAppDetector.Listener)
                     val activityIconDrawable = resolveInfo.loadIcon(packageManager)
                     SbpBank(
                         appName = appName,
+                        bankName = sbpBank.bankName,
                         packageName = packageName,
                         requiredSchema = sbpBank.schema,
                         activityIconDrawable = activityIconDrawable,

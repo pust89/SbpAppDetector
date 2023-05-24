@@ -1,9 +1,9 @@
-package com.pustovit.sbp_app_detector.network
+package com.pustovit.sbp_app_detector.model
 
 import android.content.Intent
 import android.net.Uri
 
-internal data class SbpBankDto(
+internal data class InternalSbpBankDto(
     val bankName: String,
     val logoURL: String,
     val schema: String,

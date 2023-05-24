@@ -9,6 +9,7 @@ import android.net.Uri
 /**
  * Representing an installed bank.
  * @property appName Bank application name
+ * @property bankName Bank name
  * @property packageName Bank package name
  * @property requiredSchema Required schema for this bank
  * @property activityIconDrawable Icon fetched from SbpActivity of this bank
@@ -17,6 +18,7 @@ import android.net.Uri
  */
 class SbpBank(
     val appName: String,
+    val bankName: String,
     val packageName: String,
     val requiredSchema: String,
     val activityIconDrawable: Drawable?,

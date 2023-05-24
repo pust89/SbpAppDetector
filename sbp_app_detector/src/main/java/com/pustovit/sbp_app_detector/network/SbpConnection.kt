@@ -1,8 +1,6 @@
 package com.pustovit.sbp_app_detector.network
 
-import android.content.Context
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.pustovit.sbp_app_detector.model.SbpBankDto
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -12,52 +10,35 @@ import java.net.URL
 import java.util.stream.Collectors
 
 
-internal class SbpConnection {
+internal class SbpConnection(
+    private val connectTimeout: Int,
+    private val readTimeout: Int
+) {
 
-    suspend fun getSbpBanks(
-        context: Context,
-        connectTimeout: Int,
-        readTimeout: Int,
-        onSuccessLoading: ((Context, List<SbpBankDto>) -> Unit),
-        onLoading: (Boolean) -> Unit,
-        onFailureLoading: (Throwable) -> Unit
-    ) {
+    internal fun getSbpBanks(): List<SbpBankDto> {
         var connection: HttpURLConnection? = null
 
-        try {
-            onLoading(true)
-
-            connection = withContext(Dispatchers.IO) {
-                URL(membersUrl).openConnection()
-            } as HttpURLConnection
+        return try {
+            connection = URL(membersUrl).openConnection() as HttpURLConnection
 
             connection.connectTimeout = connectTimeout
             connection.readTimeout = readTimeout
 
-            withContext(Dispatchers.IO) {
-                connection.requestMethod = "GET"
-                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                    val bufferedReader =
-                        BufferedReader(InputStreamReader(connection.inputStream))
+            connection.requestMethod = "GET"
+            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val bufferedReader =
+                    BufferedReader(InputStreamReader(connection.inputStream))
 
-                    val listOfBank = bufferedReader.use {
-                        val jsonResponse = JSONObject(it.lines().collect(Collectors.joining()))
-                        extractFromJSONResponse(jsonResponse)
-                    }
-
-                    withContext(Dispatchers.Main) {
-                        onSuccessLoading(context, listOfBank)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onLoading(false)
-                        onFailureLoading(RuntimeException("ResponseCode ${connection.responseCode}\n${connection.responseMessage}"))
-                    }
+                bufferedReader.use {
+                    val jsonResponse = JSONObject(it.lines().collect(Collectors.joining()))
+                    extractFromJSONResponse(jsonResponse)
                 }
+
+            } else {
+                throw RuntimeException("ResponseCode ${connection.responseCode}\n${connection.responseMessage}")
             }
         } catch (e: Exception) {
-            onLoading(false)
-            onFailureLoading(e)
+            throw e
         } finally {
             connection?.disconnect()
         }
@@ -84,11 +65,11 @@ internal class SbpConnection {
         }
     }
 
-    private fun JSONObject.extractStringSafety(key: String): String {
+    private fun JSONObject.extractStringSafety(key: String): String? {
         return try {
             getString(key)
         } catch (e: Exception) {
-            return ""
+            return null
         }
     }
 
