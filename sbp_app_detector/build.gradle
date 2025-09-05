@@ -36,6 +36,22 @@ android {
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
     }
 
+    // build.gradle (модуль библиотеки)
+
+    def variant = (project.findProperty('variant') ?: 'release') as String
+    def variantCap = variant.capitalize()
+    // Для запуска таски gradle :sbp_app_detector:buildAar
+    tasks.register('buildAar', Copy) {
+        group = 'build'
+        description = "Собирает AAR (${variant}) и копирует в <root>/build/aar"
+        dependsOn("assemble${variantCap}") // например assembleRelease или assembleDebug
+        from(layout.buildDirectory.dir('outputs/aar'))
+        include('*.aar')
+        into(rootProject.layout.buildDirectory.dir('aar'))
+// необязательно: переименовать итоговый файл
+// rename { "mylib-${variant}.aar" }
+    }
+
 }
 
 publishing {
